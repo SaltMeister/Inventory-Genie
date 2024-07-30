@@ -1,28 +1,40 @@
-import Image from "next/image";
-import Link from "../../node_modules/next/link";
-import { Container, Typography, Box, Button } from "node_modules/@mui/material/index";
+'use client'
 
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-import { firebaseConfig } from "../../env/firebaseEnvironment";
+import { Container, Typography, Box, Button, TextField } from "@mui/material";
+import db from "../../utils/firestore";
+import { collection, addDoc } from "firebase/firestore";//
+import { useEffect, useState } from "react";
+
+
 export default function Home() {
 
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const [input, setInput] = useState("")
+  const AddItem = async (e: any) => {
+    e.preventDefault()
 
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
+    console.log(input)
+    try {
+      const docRef = await addDoc(collection(db, "items"), {
+        name: input
+      });
+    } catch(e) {
+      console.log(e)
+    }
+  }
 
   return (
     <main>
       <Container flex>
-        <Typography variant="h1">Inventory Genie</Typography>
+        <Typography variant="h3">Inventory Genie</Typography>
+        <form onSubmit={AddItem}>
+          <TextField variant="outlined"
+          value={input}
+          onInput={ (e: any) => setInput(e.target.value)}/>
+          
+          <Button type="submit">Test Create</Button>          
+        </form>
         <Box sx={{width: 300}}>
-          <Button>THIS IS A BUTTOn</Button>
+
         </Box>
       </Container>
     </main>
