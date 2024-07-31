@@ -21,7 +21,7 @@ export default function AddItemDialogue() {
   return (
     <React.Fragment>
       <Button variant="outlined" size="small" 
-      endIcon={<AddIcon/>} onClick={handleClickOpen}>
+      endIcon={<AddIcon fontSize="small"/>} onClick={handleClickOpen}>
         Add New Item
       </Button>
 
@@ -34,7 +34,6 @@ export default function AddItemDialogue() {
             const formData = new FormData(event.currentTarget);
             const formJson = Object.fromEntries((formData as any).entries());
             
-            console.log(formJson)
             try {
               const q = query(collection(db,"items"), where("itemName", "==", formJson.itemName))
               const qSnapshot = await getDocs(q)

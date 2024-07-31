@@ -1,10 +1,11 @@
 import React, {useState} from 'react';
+import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import db from "../utils/firestore";
 import { collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
-export default function IncrementCountDialogButton({associatedDocId, currentCount} : {associatedDocId:string, currentCount:number}) {
+export default function DecrementCountDialogButton({associatedDocId, currentCount} : {associatedDocId:string, currentCount:number}) {
   const [open, setOpen] = useState(false);
   
   const handleClickOpen = () => {
@@ -19,7 +20,7 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
     <React.Fragment>
       <Button variant="hidden" size="small" onClick={handleClickOpen}
        style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} disableElevation>
-          <AddIcon fontSize="small"/>          
+          <RemoveIcon fontSize="small"/>          
 
       </Button>
       <Dialog
@@ -35,7 +36,7 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
           // Increase amount for DOC ID
           try {
             await updateDoc(doc(db, "items", associatedDocId), 
-            {"itemCount": Number(formJson.countToAdd) + Number(currentCount)})
+            {"itemCount": Number(currentCount) - Number(formJson.countToRemove) })
 
             setOpen(false)
           } catch (e) {
@@ -44,11 +45,11 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
         }
       }}
       >
-        <DialogTitle>Increase Inventory</DialogTitle>
+        <DialogTitle>Reduce Inventory</DialogTitle>
 
         <DialogContent>
           <DialogContentText>
-            Please enter the amount that you will be increasing for this item.
+            Please enter the amount that you will be reducing for this item.
           </DialogContentText>
 
           <TextField           
@@ -56,8 +57,8 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
             required
             margin="dense"
             id="count"
-            name="countToAdd"
-            label="Amount To Add"
+            name="countToRemove"
+            label="Amount To Remove"
             type="number"
             fullWidth
             variant="standard">
@@ -66,7 +67,7 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
 
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Add</Button>
+          <Button type="submit">Remove</Button>
         </DialogActions>
       </Dialog>
     </React.Fragment>

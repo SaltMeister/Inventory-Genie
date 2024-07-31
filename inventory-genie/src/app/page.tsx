@@ -3,38 +3,41 @@
 import { Container, Typography, Box, Button, TextField, Grid, Item } from "@mui/material";
 import AddIcon from '@mui/icons-material/Add';
 import db from "../../utils/firestore";
-import { collection, addDoc } from "firebase/firestore";//
+import { collection, addDoc, getDocs, query, onSnapshot } from "firebase/firestore";//
 import { useEffect, useState } from "react";
 import AddItemDialogue from "../../components/addItemDialogue";
 import RemoveItemDialogue from "../../components/removeItemDialogue";
 import IncrementCountDialogButton from '../../components/incrementCountDialogButton';
+import DecrementCountDialogButton from "../../components/decrementCountDialogButton";
 
 
 export default function Home() {
 
-  const [input, setInput] = useState("")
-  const AddItem = async (e: any) => {
-    e.preventDefault()
+  const [itemList, setItemList] = useState([])
 
-    console.log(input)
-    try {
-      const docRef = await addDoc(collection(db, "items"), {
-        name: input
-      });
-    } catch(e) {
-      console.log(e)
+  useEffect(() => {
+    console.log(itemList.length)
+    if (itemList.length > 0)
+      return
+
+    const getItemList = async () => {
+        const collectionRef = collection(db, "items")
+        const q = query(collectionRef)
+
+        const qSnapshot = await getDocs(q)
+        let documentArray:any = []
+        
+        qSnapshot.forEach((document: any) => {
+          let obj = document.data()
+          obj.id = document.id
+          documentArray.push(obj)
+        })
+        console.log(documentArray)
+        setItemList(documentArray)
     }
-  }
-  const itemList = [{
-    name: "Pear",
-    count: 5
-  }, {
-    name: "Sticks",
-    count: 2
-  }, {
-    name: "Apples",
-    count: 78
-  }]
+    getItemList()
+
+  }, [itemList])
 
   return (
     <main>
@@ -48,24 +51,25 @@ export default function Home() {
           <AddItemDialogue/> 
        </Box>
         {/* List */}
-        <Grid container spacing={0}> 
-            <Grid item xs={12} display="flex" ml={5} mr={5}>
-              <Typography flex={2} m={1}>Item Name</Typography>
-              <Typography flex={1} m={1}>Count</Typography>
-            </Grid>
-            {itemList.map(x => {
+        <Box display="block" > 
+            <Box display="flex" ml={5} mr={5} >
+              <Typography flex={1} m={1} align="center">Item Name</Typography>
+              <Typography flex={1} m={1} align="center">Count</Typography>
+            </Box>
+            {itemList.map(item => {
               return (
-                <Grid item xs={12} display="flex" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5}>
-                  <Typography flex={2} m={1}>{x.name}</Typography>
-                  <Box  flex={1} m={1} display="flex">
-                    <Typography>{x.count}</Typography>
-                    <IncrementCountDialogButton/>
+                <Box display="flex" alignItems="center" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5} key={item.id}>
+                  <Typography flex={1} m={1} align="center">{item.itemName}</Typography>
+                  <Box  flex={1} m={1} display="flex" justifyContent="center" alignItems="center">
+                    <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount}/>
+                    <Typography mr={2} ml={2}>{item.itemCount}</Typography>
+                    <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount}/>
                   </Box>
                   
-                </Grid>
+                </Box>
               )
             })} 
-        </Grid>
+        </Box>
       </Container>
     </main>
   );
