@@ -9,6 +9,7 @@ import AddItemDialogue from "../../components/addItemDialogue";
 import RemoveItemDialogue from "../../components/removeItemDialogue";
 import IncrementCountDialogButton from '../../components/incrementCountDialogButton';
 import DecrementCountDialogButton from "../../components/decrementCountDialogButton";
+import { Stack } from "../../node_modules/@mui/material/index";
 
 
 export default function Home() {
@@ -24,20 +25,39 @@ export default function Home() {
         const collectionRef = collection(db, "items")
         const q = query(collectionRef)
 
-        const qSnapshot = await getDocs(q)
+        const qSnapshots = await getDocs(q)
         let documentArray:any = []
         
-        qSnapshot.forEach((document: any) => {
+        qSnapshots.forEach((document: any) => {
           let obj = document.data()
           obj.id = document.id
           documentArray.push(obj)
         })
-        console.log(documentArray)
         setItemList(documentArray)
     }
     getItemList()
 
   }, [itemList])
+
+  const updateInventory = async () => {
+    const q = query(collection(db, "items"))
+
+    const qSnapshots = await getDocs(q)
+
+    let documentArray:any = []
+
+    qSnapshots.forEach((document: any) => {
+      let obj = document.data()
+      obj.id = document.id
+      documentArray.push(obj)
+    })
+    setItemList(documentArray)
+  }
+
+  
+  const filterItems = (stringFilter:string) => {
+    return itemList.filter(item => item.itemName.includes(stringFilter))
+  }
 
   return (
     <main>
@@ -47,11 +67,10 @@ export default function Home() {
         </Box>
 
         <Box align="right" >
-          <RemoveItemDialogue/>
-          <AddItemDialogue/> 
+          <AddItemDialogue updateInventory={updateInventory}/> 
        </Box>
         {/* List */}
-        <Box display="block" > 
+        <Stack spacing={2} display="block" > 
             <Box display="flex" ml={5} mr={5} >
               <Typography flex={1} m={1} align="center">Item Name</Typography>
               <Typography flex={1} m={1} align="center">Count</Typography>
@@ -61,15 +80,16 @@ export default function Home() {
                 <Box display="flex" alignItems="center" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5} key={item.id}>
                   <Typography flex={1} m={1} align="center">{item.itemName}</Typography>
                   <Box  flex={1} m={1} display="flex" justifyContent="center" alignItems="center">
-                    <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount}/>
+                    <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
                     <Typography mr={2} ml={2}>{item.itemCount}</Typography>
-                    <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount}/>
+                    <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
+                    <RemoveItemDialogue associatedDocId={item.id} updateInventory={updateInventory}/>
                   </Box>
                   
                 </Box>
               )
             })} 
-        </Box>
+        </Stack>
       </Container>
     </main>
   );

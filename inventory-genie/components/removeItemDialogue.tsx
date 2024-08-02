@@ -1,11 +1,11 @@
 import React, {useState} from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
+import { Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import DeleteIcon from '@mui/icons-material/Delete';
 import db from "../utils/firestore";
-import { collection, query, doc, setDoc, getDocs, where } from "firebase/firestore";
+import { collection, doc, deleteDoc } from "firebase/firestore";
 
 
-export default function RemoveItemDialogue() {
+export default function RemoveItemDialogue({associatedDocId, updateInventory} : {associatedDocId:string, updateInventory: Function}) {
 
   const [open, setOpen] = useState(false);
 
@@ -17,75 +17,40 @@ export default function RemoveItemDialogue() {
   const handleClose = () => {
     setOpen(false);
   }
+  const deleteDocument = async() => {
+            
+      try {
+        // Update Document but 
+        const docRef = doc(db, "items", associatedDocId)
+        await deleteDoc(docRef)
+
+      } catch(e) {
+        console.log(e)
+      }
+
+      handleClose();
+      updateInventory();
+  }
 
   return (
     <React.Fragment>
-      <Button variant="outlined" size="small" 
-      endIcon={<DeleteIcon/>} onClick={handleClickOpen}>
-        Remove Item
-      </Button>
+      <IconButton aria-label="delete"onClick={handleClickOpen}>
+        <DeleteIcon />
+      </IconButton>
 
       <Dialog 
         open={open}
-        PaperProps={{
-          component: 'form',
-          onSubmit: async (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault()
-            const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries((formData as any).entries());
-
-            // Set Item Count to 0 or deuce amount
-            try {
-              // Update Document but 
-              const collectionRef = collection(db, "items")
-              const q = query(collectionRef, where("itemName", "==", formJson.itemName));
-              const qSnapshot = await getDocs(q);
-
-              qSnapshot.forEach(async(document:any) => {
-                console.log(document.id, document.data())
-
-                await setDoc(doc(db, "items", document.id), formJson, {merge: true});
-              })
-
-            } catch(e) {
-              console.log(e)
-            }
-            handleClose();
-          }
-        }}
       >
-        <DialogTitle>Delete Items</DialogTitle>
+        <DialogTitle>Delete Item</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Please specify the item name and the amount to reduce
+            Are you sure you want to delete this item?
           </DialogContentText>
-
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="name"
-            name="itemName"
-            label="Item Name"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-
-          <TextField
-            required
-            margin="dense"
-            id="count"
-            name="itemCount"
-            label="Item Count"
-            type="number"
-            fullWidth
-            variant="standard"/>
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" color="error">Remove</Button>
+          <Button type="submit" color="error" onClick={deleteDocument}>Delete</Button>
         </DialogActions>
       </Dialog>    
     </React.Fragment>

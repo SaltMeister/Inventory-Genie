@@ -5,7 +5,7 @@ import db from "../utils/firestore";
 import { collection, addDoc, query, doc, setDoc, getDocs, where } from "firebase/firestore";
 
 
-export default function AddItemDialogue() {
+export default function AddItemDialogue({updateInventory} : {updateInventory: Function}) {
 
   const [open, setOpen] = useState(false);
 
@@ -47,7 +47,9 @@ export default function AddItemDialogue() {
             } catch(e) {
               console.log(e)
             }
+            
             handleClose();
+            updateInventory();
           }
         }}
       >
@@ -82,7 +84,7 @@ export default function AddItemDialogue() {
 
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit" color="success">Add</Button>
+          <Button type="submit">Add</Button>
         </DialogActions>
       </Dialog>    
     </React.Fragment>

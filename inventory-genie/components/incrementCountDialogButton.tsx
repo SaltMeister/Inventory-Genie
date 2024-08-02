@@ -4,7 +4,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import db from "../utils/firestore";
 import { collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
-export default function IncrementCountDialogButton({associatedDocId, currentCount} : {associatedDocId:string, currentCount:number}) {
+export default function IncrementCountDialogButton({associatedDocId, currentCount, updateInventory} : {associatedDocId:string, currentCount:number, updateInventory:Function}) {
   const [open, setOpen] = useState(false);
   
   const handleClickOpen = () => {
@@ -37,7 +37,8 @@ export default function IncrementCountDialogButton({associatedDocId, currentCoun
             await updateDoc(doc(db, "items", associatedDocId), 
             {"itemCount": Number(formJson.countToAdd) + Number(currentCount)})
 
-            setOpen(false)
+            setOpen(false);
+            updateInventory();
           } catch (e) {
             console.log(e)
           }

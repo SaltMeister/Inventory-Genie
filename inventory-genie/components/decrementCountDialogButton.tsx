@@ -5,7 +5,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import db from "../utils/firestore";
 import { collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
-export default function DecrementCountDialogButton({associatedDocId, currentCount} : {associatedDocId:string, currentCount:number}) {
+export default function DecrementCountDialogButton({associatedDocId, currentCount, updateInventory} : {associatedDocId:string, currentCount:number, updateInventory:Function}) {
   const [open, setOpen] = useState(false);
   
   const handleClickOpen = () => {
@@ -19,9 +19,8 @@ export default function DecrementCountDialogButton({associatedDocId, currentCoun
   return (
     <React.Fragment>
       <Button variant="hidden" size="small" onClick={handleClickOpen}
-       style={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} disableElevation>
+       sx={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} disableElevation>
           <RemoveIcon fontSize="small"/>          
-
       </Button>
       <Dialog
       open={open}
@@ -39,6 +38,7 @@ export default function DecrementCountDialogButton({associatedDocId, currentCoun
             {"itemCount": Number(currentCount) - Number(formJson.countToRemove) })
 
             setOpen(false)
+            updateInventory();
           } catch (e) {
             console.log(e)
           }
