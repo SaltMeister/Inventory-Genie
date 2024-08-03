@@ -1,24 +1,29 @@
 'use client'
 
-import { Container, Typography, Box, Button, TextField, Grid, Item } from "@mui/material";
-import AddIcon from '@mui/icons-material/Add';
+import { Container, Typography, Box } from "@mui/material";
 import db from "../../utils/firestore";
-import { collection, addDoc, getDocs, query, onSnapshot } from "firebase/firestore";//
+import { collection, getDocs, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import AddItemDialogue from "../../components/addItemDialogue";
 import RemoveItemDialogue from "../../components/removeItemDialogue";
 import IncrementCountDialogButton from '../../components/incrementCountDialogButton';
 import DecrementCountDialogButton from "../../components/decrementCountDialogButton";
 import { Stack } from "../../node_modules/@mui/material/index";
+import SearchBar from "../../components/searchBar";
 
 
 export default function Home() {
 
-  const [itemList, setItemList] = useState([])
+  const [itemList, setItemList] = useState([]);
+  const [filteredItems, setFilteredItems] = useState([])
+
+  const [filterString, setFilterString] = useState("");
+  const [isFilterActive, setIsFilterActive] = useState(false);
+
 
   useEffect(() => {
     console.log(itemList.length)
-    if (itemList.length > 0)
+    if (itemList.length > 0 )
       return
 
     const getItemList = async () => {
@@ -33,11 +38,24 @@ export default function Home() {
           obj.id = document.id
           documentArray.push(obj)
         })
-        setItemList(documentArray)
-    }
+
+        setItemList(documentArray)  
+      }
     getItemList()
 
+
   }, [itemList])
+
+  useEffect(() => {
+      //Filter if active
+      if(isFilterActive) {
+        const fList = itemList.filter(item => item.itemName.includes(filterString))   
+        
+        setFilteredItems(fList)  
+      }
+
+
+  }, [isFilterActive])
 
   const updateInventory = async () => {
     const q = query(collection(db, "items"))
@@ -59,6 +77,47 @@ export default function Home() {
     return itemList.filter(item => item.itemName.includes(stringFilter))
   }
 
+  function DisplayItems() {
+    if (isFilterActive) {
+      return (
+        <Box>
+          {filteredItems.map(item => {
+            return (
+              <Box display="flex" alignItems="center" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5} key={item.id}>
+                <Typography flex={1} m={1} align="center">{item.itemName}</Typography>
+                <Box  flex={1} m={1} display="flex" justifyContent="center" alignItems="center">
+                  <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
+                  <Typography mr={2} ml={2}>{item.itemCount}</Typography>
+                  <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
+                  <RemoveItemDialogue associatedDocId={item.id} updateInventory={updateInventory}/>
+                </Box>
+                
+              </Box>
+            )
+          })}           
+        </Box>
+      )
+    }
+
+    return (
+      <Box>
+          {itemList.map(item => {
+            return (
+              <Box display="flex" alignItems="center" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5} key={item.id}>
+                <Typography flex={1} m={1} align="center">{item.itemName}</Typography>
+                <Box  flex={1} m={1} display="flex" justifyContent="center" alignItems="center">
+                  <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
+                  <Typography mr={2} ml={2}>{item.itemCount}</Typography>
+                  <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
+                  <RemoveItemDialogue associatedDocId={item.id} updateInventory={updateInventory}/>
+                </Box>
+                
+              </Box>
+            )
+          })} 
+      </Box>
+    )
+  }
   return (
     <main>
       <Container fluid>
@@ -66,7 +125,13 @@ export default function Home() {
           <Typography variant="h4">Inventory Genie</Typography>
         </Box>
 
-        <Box align="right" >
+        <Box display="flex" alignItems="center">
+          <SearchBar 
+            filterString={filterString} 
+            setFilterString={setFilterString}
+            setIsFilterActive={setIsFilterActive}
+            filterItems={filterItems}
+          />
           <AddItemDialogue updateInventory={updateInventory}/> 
        </Box>
         {/* List */}
@@ -75,20 +140,8 @@ export default function Home() {
               <Typography flex={1} m={1} align="center">Item Name</Typography>
               <Typography flex={1} m={1} align="center">Count</Typography>
             </Box>
-            {itemList.map(item => {
-              return (
-                <Box display="flex" alignItems="center" sx={{boxShadow: 2, borderRadius: "5px"}} mt={2} ml={5} mr={5} key={item.id}>
-                  <Typography flex={1} m={1} align="center">{item.itemName}</Typography>
-                  <Box  flex={1} m={1} display="flex" justifyContent="center" alignItems="center">
-                    <DecrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
-                    <Typography mr={2} ml={2}>{item.itemCount}</Typography>
-                    <IncrementCountDialogButton associatedDocId={item.id} currentCount={item.itemCount} updateInventory={updateInventory}/>
-                    <RemoveItemDialogue associatedDocId={item.id} updateInventory={updateInventory}/>
-                  </Box>
-                  
-                </Box>
-              )
-            })} 
+            <DisplayItems/>
+
         </Stack>
       </Container>
     </main>

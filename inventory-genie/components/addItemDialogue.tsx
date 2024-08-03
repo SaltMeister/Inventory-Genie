@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import AddIcon from '@mui/icons-material/Add';
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import React, { useState } from "react";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import db from "../utils/firestore";
-import { collection, addDoc, query, doc, setDoc, getDocs, where } from "firebase/firestore";
 
 
 export default function AddItemDialogue({updateInventory} : {updateInventory: Function}) {

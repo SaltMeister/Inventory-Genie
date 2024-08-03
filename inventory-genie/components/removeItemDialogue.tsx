@@ -1,8 +1,8 @@
-import React, {useState} from "react";
-import { Button, IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { deleteDoc, doc } from "firebase/firestore";
+import React, { useState } from "react";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from "../node_modules/@mui/material/index";
 import db from "../utils/firestore";
-import { collection, doc, deleteDoc } from "firebase/firestore";
 
 
 export default function RemoveItemDialogue({associatedDocId, updateInventory} : {associatedDocId:string, updateInventory: Function}) {

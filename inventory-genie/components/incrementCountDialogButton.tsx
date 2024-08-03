@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
+import { doc, updateDoc } from "firebase/firestore";
+import React, { useState } from 'react';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "../node_modules/@mui/material/index";
 import db from "../utils/firestore";
-import { collection, doc, setDoc, updateDoc } from "firebase/firestore";
 
 export default function IncrementCountDialogButton({associatedDocId, currentCount, updateInventory} : {associatedDocId:string, currentCount:number, updateInventory:Function}) {
   const [open, setOpen] = useState(false);
