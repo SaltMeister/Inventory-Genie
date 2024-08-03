@@ -4,7 +4,7 @@ import { InputAdornment, TextField } from "../node_modules/@mui/material/index";
 export default function SearchBar({filterString, setFilterString, setIsFilterActive, filterItems} : {filterString:string, setFilterString:Function, setIsFilterActive:Function, filterItems:Function}) {
   
   const handleKeyPress = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && filterString.length > 0) {
       setIsFilterActive(true)
       console.log('Submitted value:', filterString);
     }

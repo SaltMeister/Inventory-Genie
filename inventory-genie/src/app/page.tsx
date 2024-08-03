@@ -55,7 +55,7 @@ export default function Home() {
       }
 
 
-  }, [isFilterActive])
+  }, [filterString])
 
   const updateInventory = async () => {
     const q = query(collection(db, "items"))
