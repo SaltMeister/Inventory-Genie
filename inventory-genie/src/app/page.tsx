@@ -43,17 +43,19 @@ export default function Home() {
       }
     getItemList()
 
-
   }, [itemList])
 
   useEffect(() => {
-      //Filter if active
-      if(isFilterActive) {
-        const fList = itemList.filter(item => item.itemName.includes(filterString))   
-        
-        setFilteredItems(fList)  
-      }
+    setFilteredItems([])
 
+    console.log(isFilterActive);
+    
+    //Filter if active
+    if(isFilterActive) {
+      const fList = itemList.filter(item => item.itemName.toLowerCase().includes(filterString.toLowerCase()))   
+      
+      setFilteredItems(fList)  
+    }
 
   }, [filterString])
 
@@ -70,11 +72,6 @@ export default function Home() {
       documentArray.push(obj)
     })
     setItemList(documentArray)
-  }
-
-  
-  const filterItems = (stringFilter:string) => {
-    return itemList.filter(item => item.itemName.includes(stringFilter))
   }
 
   function DisplayItems() {
@@ -130,7 +127,6 @@ export default function Home() {
             filterString={filterString} 
             setFilterString={setFilterString}
             setIsFilterActive={setIsFilterActive}
-            filterItems={filterItems}
           />
           <AddItemDialogue updateInventory={updateInventory}/> 
        </Box>

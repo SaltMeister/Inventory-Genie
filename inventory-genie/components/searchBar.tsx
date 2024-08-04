@@ -1,15 +1,8 @@
 import SearchIcon from '@mui/icons-material/Search';
 import React from "react";
 import { InputAdornment, TextField } from "../node_modules/@mui/material/index";
-export default function SearchBar({filterString, setFilterString, setIsFilterActive, filterItems} : {filterString:string, setFilterString:Function, setIsFilterActive:Function, filterItems:Function}) {
+export default function SearchBar({filterString, setFilterString, setIsFilterActive} : {filterString:string, setFilterString:Function, setIsFilterActive:Function}) {
   
-  const handleKeyPress = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && filterString.length > 0) {
-      setIsFilterActive(true)
-      console.log('Submitted value:', filterString);
-    }
-  }; 
-
   return(
     <React.Fragment>
       <TextField
@@ -23,10 +16,10 @@ export default function SearchBar({filterString, setFilterString, setIsFilterAct
           if(event.target.value.length <= 0) {
             setIsFilterActive(false)
           } 
-
+          
+          setIsFilterActive(true)
           setFilterString(event.target.value);          
         }}
-        onKeyPress={handleKeyPress}
         variant="standard"
         size="small"
         InputProps={{
