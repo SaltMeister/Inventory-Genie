@@ -140,7 +140,9 @@ export default function Home() {
               <Typography flex={1} m={1} align="center">Item Name</Typography>
               <Typography flex={1} m={1} align="center">Count</Typography>
             </Box>
-            <DisplayItems/>
+
+            {itemList.length <= 0 ? <Typography align="center" variant="h4">No items in inventory</Typography> : <DisplayItems/>}
+
 
         </Stack>
       </Container>
