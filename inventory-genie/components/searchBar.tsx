@@ -15,10 +15,13 @@ export default function SearchBar({filterString, setFilterString, setIsFilterAct
         onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           if(event.target.value.length <= 0) {
             setIsFilterActive(false)
+            setFilterString(event.target.value);    
+            return
           } 
           
           setIsFilterActive(true)
-          setFilterString(event.target.value);          
+          setFilterString(event.target.value);    
+                
         }}
         variant="standard"
         size="small"
