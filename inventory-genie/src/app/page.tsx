@@ -1,6 +1,6 @@
 'use client'
 
-import { Container, Typography, Box } from "@mui/material";
+import { Container, Typography, Box, Button, Link } from "@mui/material";
 import db from "../../utils/firestore";
 import { collection, getDocs, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
@@ -43,7 +43,7 @@ export default function Home() {
       }
     getItemList()
 
-  }, [itemList])
+  }, itemList)
 
   useEffect(() => {
     setFilteredItems([])
@@ -128,7 +128,11 @@ export default function Home() {
             setFilterString={setFilterString}
             setIsFilterActive={setIsFilterActive}
           />
-          <AddItemDialogue updateInventory={updateInventory}/> 
+          <AddItemDialogue updateInventory={updateInventory}/>
+          <Link href={`/recommendations`}>
+            <Button variant="outlined" size="small">LLM Recommendation</Button>
+          </Link>
+
        </Box>
         {/* List */}
         <Stack spacing={2} display="block" > 

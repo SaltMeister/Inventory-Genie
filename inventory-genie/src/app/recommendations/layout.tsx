@@ -3,8 +3,12 @@ import React, {useEffect} from "react"
 import db from "../../../utils/firestore"
 import { collection, getDocs, query } from "firebase/firestore";
 import { GenerateRecommendation } from "../generateRecommendation"
+import { Box, Container, Typography } from "../../../node_modules/@mui/material/index";
+import { useState } from 'react';
 
 export default function Layout() {
+
+  const [recMessage, setRecMessage] = useState("");
 
   useEffect(() => {
     const getRecommendationFromItems = async () => {
@@ -19,9 +23,16 @@ export default function Layout() {
         obj.id = document.id
         documentArray.push(obj)
       })
+      await GenerateRecommendation(documentArray)
+        .then(response => {
+          console.log(response)
+          setRecMessage(response)
+        })
+        .catch(e => {
+          console.log(e)
+          setRecMessage("Error Obtaining LLM response");
+        });
 
-      const aiResponse = await GenerateRecommendation(documentArray);
-      console.log(aiResponse);
     }
 
     getRecommendationFromItems();
@@ -30,8 +41,15 @@ export default function Layout() {
   
 
   return (
-    <>
-      <h3>Based off your inventory</h3>
-    </>
+    <Container fluid>
+      <Box textAlign="center" m={5}>
+        <Typography variant="h4">A Recommendation based off of your inventory</Typography>
+      </Box>
+      <Box>
+        <Typography variant="p">{recMessage}</Typography>
+      </Box>
+
+    </Container>
+
   )
 }
